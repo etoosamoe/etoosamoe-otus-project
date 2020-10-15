@@ -1,0 +1,71 @@
+version: '3.3'
+services:
+
+    mongodb:
+        image: mongo:3.2
+        volumes:
+            - mongodb:/data/db
+        networks:
+            back_net:
+                aliases:
+                    - mongodb
+
+    rabbitmq:
+        image: rabbitmq:3
+        environment:
+            - RABBITMQ_DEFAULT_USER=user
+            - RABBITMQ_DEFAULT_PASS=password
+        networks:
+            back_net:
+                aliases:
+                    - rabbitmq
+
+    crawler:
+        image: etosamoe/crawler:latest
+        environment:
+            - MONGO=mongodb
+            - MONGO_PORT=27017
+            - RMQ_HOST=rabbitmq
+            - RMQ_QUEUE=queue1
+            - RMQ_USERNAME=user
+            - RMQ_PASSWORD=password
+            - CHECK_INTERVAL=60
+            - EXCLUDE_URLS='.*github.com'
+        command: /usr/bin/python3 -u crawler/crawler.py https://vitkhab.github.io/search_engine_test_site/
+        depends_on:
+            - mongodb
+            - rabbitmq
+        networks:
+            front_net:
+                aliases:
+                    - crawler
+            back_net:
+                aliases:
+                    - crawler
+
+    ui:
+        image: etosamoe/ui:latest
+        environment:
+            - MONGO=mongodb
+            - MONGO_PORT=27017
+            - FLASK_APP=ui.py
+        depends_on: 
+          - mongodb
+          - rabbitmq
+          - crawler
+        ports:
+          - "8000:8000/tcp"
+        networks:
+          back_net:
+            aliases:
+              - crawler
+          front_net:
+            aliases:
+              - crawler
+
+volumes:
+    mongodb:
+
+networks:
+    back_net:
+    front_net:

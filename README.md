@@ -29,4 +29,12 @@
 ### Способ 2
 Код приложений лежит в папке ``./docker/app/[crawler|ui]``. В файле ``Makefile`` необходимо установить переменную ``USER`` и запустить ``make build_all``, ``make push_all``.  
 
+## Запуск сервиса на машине
+
+### Требования
+ - docker-machine на виртуальной машине
+
+### Запуск
+
+``docker-compose up -d -f ./docker/compose/docker-compose.yml``
 
