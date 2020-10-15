@@ -1,0 +1,7 @@
+cloud_id  = "cloud-id here"
+folder_id = "folder-id here"
+zone                     = "ru-central1-a"
+public_key_path          = "/path/to/your/key.pub"
+private_key_path         = "/path/to/your/private/key"
+subnet_id                = "subnet-id"
+service_account_key_file = "path/to/your/service/key.json"

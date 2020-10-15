@@ -10,6 +10,11 @@
 - RabbitMQ
 - MongoDB
 
+## Требования для разворачивания инфраструктуры
+ - terraform
+ - ansible
+ - ``ansible-galaxy collection install community.general``
+
 ## План действий
 
 - Подготовка инфраструктуры: Терраформ + Ансибл

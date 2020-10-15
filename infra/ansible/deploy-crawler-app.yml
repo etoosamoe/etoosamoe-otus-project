@@ -1,0 +1,23 @@
+---
+- name: Run crawler app containers
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Install python-pip
+      apt: 
+        name: python-pip
+        state: present
+
+    - name: Install pip docker
+      pip:
+        name: docker
+
+    - name: Run docker-compose
+      community.general.docker_compose:
+        project_src: ../../docker/compose
+        build: no
+      register: output
+
+    - ansible.builtin.debug:
+        var: output
