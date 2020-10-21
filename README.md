@@ -12,16 +12,16 @@
 
 ## Checklist
 
-[x] docker builds  
-[x] docker-compose  
-[x] k8s кластер из terraform  
-[x] деплой приложения в кластере    
-[x] деплой prometheus
-[] деплой grafana  
-[] деплой ELK\EFK  
-[] деплой gitlab, gitlab-runner  
-[] подготовка ci-cd для разных namespace  
-[] красивейший README  
+ - [x] docker builds  
+ - [x] docker-compose  
+ - [x] k8s кластер из terraform  
+ - [x] деплой приложения в кластере    
+ - [x] деплой prometheus
+ - [ ] деплой grafana  
+ - [ ] деплой ELK\EFK  
+ - [ ] деплой gitlab, gitlab-runner  
+ - [ ] подготовка ci-cd для разных namespace  
+ - [ ] красивейший README  
 
 
 ## Требования для разворачивания инфраструктуры
