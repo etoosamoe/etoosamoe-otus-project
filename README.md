@@ -10,36 +10,55 @@
 - RabbitMQ
 - MongoDB
 
+## Checklist
+
+[x] docker builds  
+[x] docker-compose  
+[x] k8s кластер из terraform  
+[x] деплой приложения в кластере    
+[x] деплой prometheus
+[] деплой grafana  
+[] деплой ELK\EFK  
+[] деплой gitlab, gitlab-runner  
+[] подготовка ci-cd для разных namespace  
+[] красивейший README  
+
+
 ## Требования для разворачивания инфраструктуры
+ 
+ - yc-cli
  - terraform
- - ansible
- - ``ansible-galaxy collection install community.general``
+ - docker
+ - kubectl
 
-## План действий
+### Создание docker-образов и загрузка их на docker-hub
 
-- Подготовка инфраструктуры: Терраформ + Ансибл
-- Подготовка докер образов: docker build
-- Мониторинг: Prometheus + Grafana (?), EL(F)K для логов
-- k8s (если успеется)
+ - создать виртуальную машину с docker на борту (опционально)
+ - установить docker-machine (опционально)
+ - установить переменную ``USER`` в файле ``./docker/app/Makefile``
+ - ``make`` (отработает сборка и push образов в docker-hub)
+ 
+ - запустить приложение ``docker-compose up -d -f ./docker/compose/docker-compose.yml``  (опционально)
 
-## Подготовка инфраструктуры
 
-## Подготовка docker образов
+## Запуск инфраструктуры
 
-### Способ 1
- - установить переменную USER в файле docker.sh  
- - запустить docker.sh
-Скрипт развернет виртуальную машину, установит на неё docker-machine, соберет там образы, пушнет их в docker_hub, удалит docker-machine и удалит виртуальную машину.  
+ - перейти в папку с teraform ``cd ./infra/tf-k8s``  
+ - ``mv terraform.tfvars.example terraform.tfvars``  
+ - ``terraform.tfvars`` <~~ заполнить файл  
+ - создаем кластер ``terraform apply --auto-approve``  
+ - добавляем кластер в kubectl ``yc managed-kubernetes cluster   get-credentials crawler-app-k8s --external``  
+  
+## Запуск приложения
 
-### Способ 2
-Код приложений лежит в папке ``./docker/app/[crawler|ui]``. В файле ``Makefile`` необходимо установить переменную ``USER`` и запустить ``make build_all``, ``make push_all``.  
+ - создадим namespaces ``./namespaces.sh``  
+ - развернем сопутствующие mongodb и rabbitmq ``./additional.sh``  
+ - развернем приложение ``./crawler.sh``
+ - смотрим ext-ip адрес балансера, который пробрасывает 80-ый порт приложение ``kubectl get svc ui -n prod``  
 
-## Запуск сервиса на машине
+## Запуск мониторинга
 
-### Требования
- - docker-machine на виртуальной машине
+Мониторится кластер, а так же метрики из ui и bot сервисов.  
 
-### Запуск
-
-``docker-compose up -d -f ./docker/compose/docker-compose.yml``
-
+ - из корневой папки репозитория ``./monitoring.sh``  
+ - ожидаем разворачивания балансера, который пробрасывает 80-ый порт на приложения ``kubectl get svc prometheus-server -n monitoring`` и ``kubectl get svc grafana -n monitoring``  

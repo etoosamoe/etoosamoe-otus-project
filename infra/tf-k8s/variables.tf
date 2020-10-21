@@ -25,3 +25,11 @@ variable public_key_path {
 variable private_key_path {
 
 }
+
+variable service_account_id {
+
+}
+
+variable network_id {
+    
+}
