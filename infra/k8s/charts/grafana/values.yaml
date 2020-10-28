@@ -366,7 +366,6 @@ plugins: []
 ## Configure grafana datasources
 ## ref: http://docs.grafana.org/administration/provisioning/#datasources
 ##
-datasources: {}
 #  datasources.yaml:
 #    apiVersion: 1
 #    datasources:
@@ -383,6 +382,15 @@ datasources: {}
 #        jsonData:
 #          authType: credentials
 #          defaultRegion: us-east-1
+datasources:
+ datasources.yaml:
+   apiVersion: 1
+   datasources:
+   - name: Prometheus
+     type: prometheus
+     url: http://prometheus-server.monitoring.svc.cluster.local
+     access: proxy
+     isDefault: true
 
 ## Configure notifiers
 ## ref: http://docs.grafana.org/administration/provisioning/#alert-notification-channels

@@ -17,7 +17,7 @@
  - [x] k8s кластер из terraform  
  - [x] деплой приложения в кластере    
  - [x] деплой prometheus
- - [ ] деплой grafana  
+ - [x] деплой grafana, подключенного к prometheus
  - [ ] деплой ELK\EFK  
  - [ ] деплой gitlab, gitlab-runner  
  - [ ] подготовка ci-cd для разных namespace  
@@ -61,4 +61,5 @@
 Мониторится кластер, а так же метрики из ui и bot сервисов.  
 
  - из корневой папки репозитория ``./monitoring.sh``  
- - ожидаем разворачивания балансера, который пробрасывает 80-ый порт на приложения ``kubectl get svc prometheus-server -n monitoring`` и ``kubectl get svc grafana -n monitoring``  
+ - ожидаем разворачивания балансера, который пробрасывает 80-ый порт на приложения ``kubectl get svc grafana -n monitoring``  
+  prometheus-server разворачивается без доступа снаружи.
