@@ -19,7 +19,7 @@
  - [x] деплой prometheus
  - [x] деплой grafana, подключенного к prometheus
  - [ ] деплой ELK\EFK  
- - [ ] деплой gitlab, gitlab-runner  
+ - [ ] деплой gitlab, gitlab-runner  (или в github actions?)
  - [ ] подготовка ci-cd для разных namespace  
  - [ ] красивейший README  
 
@@ -47,7 +47,7 @@
  - ``mv terraform.tfvars.example terraform.tfvars``  
  - ``terraform.tfvars`` <~~ заполнить файл  
  - создаем кластер ``terraform apply --auto-approve``  
- - добавляем кластер в kubectl ``yc managed-kubernetes cluster   get-credentials crawler-app-k8s --external``  
+ - добавляем кластер в kubectl ``yc managed-kubernetes cluster   get-credentials crawler-app-cluster --external``  
   
 ## Запуск приложения
 

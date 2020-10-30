@@ -52,7 +52,7 @@ resource "yandex_kubernetes_node_group" "node-group-0" {
     nat         = true
 
     resources {
-      memory = 2
+      memory = 4
       cores  = 2
     }
 
