@@ -1,0 +1,36 @@
+image: alpine:3.7
+
+stages:
+    - build
+
+build:
+    stage: build
+    image: docker:git
+    services:
+      - docker:dind
+    script:
+      - setup_docker
+      - build
+    variables:
+      DOCKER_DRIVER: overlay2
+    only:
+      - branches
+
+test:
+  stage: test
+  script:
+    - echo Testing application Searh UI ...
+    - exit 0
+  only:
+    - branches
+
+release:
+    stage: release
+    image: docker
+    services:
+      - docker:dind
+    script:
+      - setup_docker
+      - release
+    only:
+      - maste
