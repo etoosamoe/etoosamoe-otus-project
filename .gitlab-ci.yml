@@ -1,38 +1,16 @@
-image: alpine:3.7
-
 stages:
     - build
-    - test
-    - release
 
 build:
     stage: build
-    image: docker:git
-    services:
-      - docker:dind
-    script:
-      - setup_docker
-      - build
     variables:
       DOCKER_DRIVER: overlay2
-    only:
-      - branches
-
-test:
-  stage: test
-  script:
-    - echo Testing application Searh UI ...
-    - exit 0
-  only:
-    - branches
-
-release:
-    stage: release
-    image: docker
+      DOCKER_TLS_CERTDIR: ""
+      DOCKER_HOST: tcp://localhost:2375/
+    image: cr.yandex/yc/metadata-token-docker-helper:0.2
     services:
-      - docker:dind
+      - docker:19.03.1-dind
     script:
-      - setup_docker
-      - release
-    only:
-      - maste
+      - cd ./docker/app/crawler
+      - docker build . -t cr.yandex/crpip7630dqdfpbk5ehs/crawler:app-$CI_COMMIT_SHORT_SHA
+      - docker push cr.yandex/crpip7630dqdfpbk5ehs/crawler:app-$CI_COMMIT_SHORT_SHA
