@@ -20,7 +20,7 @@ spec:
         component: ui
     spec:
       containers:
-      - image: cr.yandex/crpip7630dqdfpbk5ehs/crawler:__VERSION__
+      - image: cr.yandex/crpip7630dqdfpbk5ehs/ui:__VERSION__
         name: ui
         env:
         - name: MONGO
