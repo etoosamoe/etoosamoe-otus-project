@@ -14,3 +14,6 @@ build:
       - cd ./docker/app/crawler
       - docker build . -t cr.yandex/crpip7630dqdfpbk5ehs/crawler:app-$CI_COMMIT_SHORT_SHA
       - docker push cr.yandex/crpip7630dqdfpbk5ehs/crawler:app-$CI_COMMIT_SHORT_SHA
+      - cd ./docker/app/ui
+      - docker build . -t cr.yandex/crpip7630dqdfpbk5ehs/crawler:ui-$CI_COMMIT_SHORT_SHA
+      - docker push cr.yandex/crpip7630dqdfpbk5ehs/crawler:ui-$CI_COMMIT_SHORT_SHA
