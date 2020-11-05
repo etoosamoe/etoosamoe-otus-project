@@ -10,6 +10,12 @@
 - RabbitMQ
 - MongoDB
 
+## IP addresses
+
+ - Grafana 178.154.224.216
+ - UI 84.201.128.191
+ - Gitlab 178.154.230.20
+
 ## Checklist
 
  - [x] docker builds  
@@ -63,3 +69,28 @@
  - из корневой папки репозитория ``./monitoring.sh``  
  - ожидаем разворачивания балансера, который пробрасывает 80-ый порт на приложения ``kubectl get svc grafana -n monitoring``  
   prometheus-server разворачивается без доступа снаружи.
+
+  - получаем креды от админского аккаунта для графаны ``kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo``
+  - добавляем дашборд из папки ``./infra/k8s/charts/grafana/dashboards``
+
+## GitLab
+
+Создается заранее в веб-интерфейсе Yandex Cloud Console из образа Gitlab с рекомендуемыми параметрами.
+
+ - Создаем сервис ``kubectl apply -f ./infra/k8s/gitlab-admin-service-account.yaml``
+ - Получить API URL, токен и сертификат и ввести их в настройках проекта Opertaions - Kubernetes - Add Existing Cluster:  
+  ``yc managed-kubernetes cluster get crawler-app-cluster --format=json \
+| jq -r .master.endpoints.external_v4_endpoint``
+  ``kubectl -n kube-system get secrets -o json | jq -r '.items[] | select(.metadata.name | startswith("gitlab-admin")) | .data.token' | base64 --decode``  
+  ``yc managed-kubernetes cluster get crawler-app-cluster --format=json \
+| jq -r .master.master_auth.cluster_ca_certificate``  
+ - Установить Tiller и Gitlab Runner 
+ - В настройках Settings - CI\CD добавить переменные KUBE_URL и KUBE_TOKEN.
+  
+  Верификация установки:
+  ```
+  kubectl get pods -n gitlab-managed-apps
+NAME                                    READY   STATUS    RESTARTS   AGE
+runner-gitlab-runner-7bb5cf45d4-87p6r   1/1     Running   0          5m27s
+tiller-deploy-997ddd879-x68rb           1/1     Running   0          41m
+```

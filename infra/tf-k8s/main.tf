@@ -52,13 +52,13 @@ resource "yandex_kubernetes_node_group" "node-group-0" {
     nat         = true
 
     resources {
-      memory = 4
-      cores  = 2
+      memory = 16
+      cores  = 4
     }
 
     boot_disk {
       type = "network-hdd"
-      size = 64
+      size = 120
     }
 
     scheduling_policy {
@@ -83,4 +83,5 @@ resource "yandex_kubernetes_node_group" "node-group-0" {
     auto_repair  = true
   }
 }
+
 
