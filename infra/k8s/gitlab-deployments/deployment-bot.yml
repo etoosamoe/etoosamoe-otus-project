@@ -20,7 +20,7 @@ spec:
         component: bot
     spec:
       containers:
-      - image: cr.yandex/crpip7630dqdfpbk5ehs/crawler:__VERSION__
+      - image: cr.yandex/__REGISTRY__/crawler:__VERSION__
         name: bot
         env:
         - name: MONGO

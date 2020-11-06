@@ -12,9 +12,9 @@
 
 ## IP addresses
 
- - Grafana 178.154.224.216
+ - Grafana [178.154.224.216](http://178.154.224.216)
  - UI [84.201.128.191](http://84.201.128.191/)
- - Gitlab 178.154.230.20
+ - Gitlab [178.154.230.20](http://178.154.230.20)
 
 ## Checklist
 
@@ -41,6 +41,8 @@
 
 ### Создание docker-образов и загрузка их на docker-hub
 
+> Опционально, если мы хотим разворачивать приложение сами. В GitLab происходит автоматическая сборка приложений в yandex registry.
+
  - создать виртуальную машину с docker на борту (опционально)
  - установить docker-machine (опционально)
  - установить переменную ``USER`` в файле ``./docker/app/Makefile``
@@ -53,7 +55,7 @@
 
  - перейти в папку с teraform ``cd ./infra/tf-k8s``  
  - ``mv terraform.tfvars.example terraform.tfvars``  
- - ``terraform.tfvars`` <~~ заполнить файл  
+ - ``terraform.tfvars`` **<~~ заполнить файл**  
  - создаем кластер ``terraform apply --auto-approve``  
  - добавляем кластер в kubectl ``yc managed-kubernetes cluster   get-credentials crawler-app-cluster --external``  
   
@@ -64,7 +66,7 @@
 
 ### Запуск приложения без GitLab CI
 
-Этот пункт необходимо выполнить, если мы не хотим разворачивать приложение через CI\CD в GitLab.  
+> Этот пункт необходимо выполнить, если мы не хотим разворачивать приложение через CI\CD в GitLab.  
  - развернем приложение ``./crawler.sh``
  - смотрим ext-ip адрес балансера, который пробрасывает 80-ый порт приложение ``kubectl get svc ui -n prod``  
 
@@ -81,21 +83,21 @@
 
 ## GitLab и Container Registry
 
-Машину с GitLab и регистр образов необходимо создать через веб-интерфейс консоли YandexCloud с рекомендуемыми параметрами. Далее:  
+> Машину с GitLab и регистр образов необходимо создать через веб-интерфейс консоли YandexCloud с рекомендуемыми параметрами. 
 
+> CI/CD описан в .gitlab-ci.yml
  - Создаем проект в GitLab
  - Создаем сервис ``kubectl apply -f ./infra/k8s/gitlab-admin-service-account.yaml``
  - Получаем API URL, токен и сертификат и ввести их в настройках проекта Opertaions - Kubernetes - Add Existing Cluster:  
-  ``yc managed-kubernetes cluster get crawler-app-cluster --format=json \
-| jq -r .master.endpoints.external_v4_endpoint``  
-
-  ``kubectl -n kube-system get secrets -o json | jq -r '.items[] | select(.metadata.name | startswith("gitlab-admin")) | .data.token' | base64 --decode``  
-
-  ``yc managed-kubernetes cluster get crawler-app-cluster --format=json \
-| jq -r .master.master_auth.cluster_ca_certificate``  
+   - Адрес API нашего мастера - ``yc managed-kubernetes cluster get crawler-app-cluster --format=json | jq -r .master.endpoints.external_v4_endpoint``  
+   - Токен для доступа по API ``kubectl -n kube-system get secrets -o json | jq -r '.items[] | select(.metadata.name | startswith("gitlab-admin")) | .data.token' | base64 --decode``  
+   - CA-сертификат кластера ``yc managed-kubernetes cluster get crawler-app-cluster --format=json | jq -r .master.master_auth.cluster_ca_certificate``  
 
  - Установить Tiller и Gitlab Runner 
- - В настройках Settings - CI\CD добавить переменные KUBE_URL и KUBE_TOKEN.
+ - В настройках ``Settings`` - ``CI\CD`` добавить переменные
+   - ``KUBE_URL`` - адрес API нашего мастера
+   - ``KUBE_TOKEN`` - токен для доступа по API
+   - ``REGISTRY_ID`` - id нашего yandex registry
   
   Верификация установки:
   ```
@@ -104,7 +106,6 @@ NAME                                    READY   STATUS    RESTARTS   AGE
 runner-gitlab-runner-7bb5cf45d4-87p6r   1/1     Running   0          5m27s
 tiller-deploy-997ddd879-x68rb           1/1     Running   0          41m
 ```
- - В файлах ``./.gitlab-ci.yml``, ``./infra/k8s/gitlab-deployments/deployment-bot.yml`` и ``deployment-ui.yml`` меняем id регистра контейнеров на наш
  - Добавляем remote в наш git репозиторий.
  - Делаем push кода в GitLab.
  - Ожидаем окончания

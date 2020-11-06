@@ -30,5 +30,7 @@ deploy:
     - kubectl config use-context default
     - sed -i "s/__VERSION__/app-$CI_COMMIT_SHORT_SHA/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
     - sed -i "s/__VERSION__/ui-$CI_COMMIT_SHORT_SHA/" ./infra/k8s/gitlab-deployments/deployment-ui.yml
+    - sed -i "s/__REGISTRY__/$REGISTRY_ID/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
+    - sed -i "s/__REGISTRY__/$REGISTRY_ID/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
     - sh ./crawler-gitlab.sh
   when: manual
