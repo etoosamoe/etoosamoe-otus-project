@@ -16,11 +16,11 @@ build-prod:
       - docker:19.03.1-dind
     script:
       - cd ./docker/app/crawler
-      - docker build . -t cr.yandex/$REGISTRY_ID/crawler:app-master
-      - docker push cr.yandex/$REGISTRY_ID/crawler:app-master
+      - docker build . -t cr.yandex/$REGISTRY_ID/crawler:app-$CI_COMMIT_SHORT_SHA
+      - docker push cr.yandex/$REGISTRY_ID/crawler:app-$CI_COMMIT_SHORT_SHA
       - cd ../ui
-      - docker build . -t cr.yandex/$REGISTRY_ID/ui:ui-master
-      - docker push cr.yandex/$REGISTRY_ID/ui:ui-master
+      - docker build . -t cr.yandex/$REGISTRY_ID/ui:ui-$CI_COMMIT_SHORT_SHA
+      - docker push cr.yandex/$REGISTRY_ID/ui:ui-$CI_COMMIT_SHORT_SHA
     when: manual
     only:
       - master
