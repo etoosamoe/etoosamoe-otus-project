@@ -12,9 +12,10 @@
 
 ## IP addresses
 
- - Grafana [grafana.178.154.224.216.xip.io](http://grafana.178.154.224.216.xip.io)
- - UI [ui-prod.84.201.128.191.xip.io](http://ui-prod.84.201.128.191.xip.io/)
+ - UI-prod [ui-prod.84.201.128.191.xip.io](http://ui-prod.84.201.128.191.xip.io/)
+ - UI-dev [ui-dev.84.201.158.178.xip.io](http://ui-dev.84.201.158.178.xip.io/)
  - Gitlab [gitlab.178.154.230.20.xip.io](http://gitlab.178.154.230.20.xip.io)
+ - Grafana [grafana.178.154.224.216.xip.io](http://grafana.178.154.224.216.xip.io)
 
 ## Checklist
 
@@ -27,7 +28,7 @@
  - [ ] деплой ELK\EFK  
  - [x] ~~деплой gitlab, gitlab-runner  (или в github actions?)~~
  - [x] подготовка ci-cd для master
- - [ ] подготовка ci-cd для разных веток  
+ - [x] подготовка ci-cd для разных веток  
  - [ ] красивейший README  
 
 
@@ -61,8 +62,8 @@
   
 ## Запуск дополнительных подов 
 
- - создадим namespaces ``./namespaces.sh``  
- - развернем сопутствующие mongodb и rabbitmq ``./additional.sh``  
+ - создадим namespaces ``./namespaces.sh``  (создаются неймспейсы prod, dev, monitoring, logging)
+ - развернем сопутствующие mongodb и rabbitmq ``./additional.sh``  (разворачиваются как прод, так и дев)
 
 ### Запуск приложения без GitLab CI
 
@@ -80,6 +81,8 @@
 
   - получаем креды от админского аккаунта для графаны ``kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo``
   - добавляем дашборд из папки ``./infra/k8s/charts/grafana/dashboards``
+
+> В Grafana два графика в каждой панели: prod и dev
 
 ## GitLab и Container Registry
 
@@ -109,3 +112,13 @@ tiller-deploy-997ddd879-x68rb           1/1     Running   0          41m
  - Добавляем remote в наш git репозиторий.
  - Делаем push кода в GitLab.
  - Ожидаем окончания
+
+
+## Процесс CI-CD
+
+ - Всегда имеются два окружения: **prod** и **dev**.
+ - Разработчик вносит свои изменения в ветку с любым названием, например ``feature-new-design``.
+ - Разработчик делает merge-request в ветку dev, мержит изменения
+ - Срабатывают jobs для сборки новых образов и их деплоя в dev namespace. 
+ - Разработчик делает merge request в master.
+ - Срабатывают jobs для сборки образов и их деплоая в prod namespace.

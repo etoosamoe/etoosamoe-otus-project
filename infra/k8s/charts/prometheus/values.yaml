@@ -1576,6 +1576,8 @@ serverFiles:
           - source_labels: [__meta_kubernetes_service_label_component]
             action: keep
             regex: bot
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: kubernetes_namespace
           - source_labels: [__meta_kubernetes_service_name]
             target_label: kubernetes_name  
   
@@ -1588,6 +1590,8 @@ serverFiles:
           - source_labels: [__meta_kubernetes_service_label_component]
             action: keep
             regex: ui
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: kubernetes_namespace
           - source_labels: [__meta_kubernetes_service_name]
             target_label: kubernetes_name
 # adds additional scrape configs to prometheus.yml
