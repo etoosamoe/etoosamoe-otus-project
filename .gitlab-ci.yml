@@ -2,7 +2,7 @@ stages:
     - build-prod
     - deploy-prod
     - build-dev
-    - build-prod
+    - deploy-dev
 
 build-prod:
     stage: build-prod
@@ -68,7 +68,7 @@ build-dev:
     refs:
       - dev
   
-deploy-prod:
+deploy-dev:
   image: gcr.io/cloud-builders/kubectl:latest
   stage: deploy-dev
   variables:
