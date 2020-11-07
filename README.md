@@ -12,9 +12,9 @@
 
 ## IP addresses
 
- - Grafana [178.154.224.216](http://178.154.224.216)
- - UI [84.201.128.191](http://84.201.128.191/)
- - Gitlab [178.154.230.20](http://178.154.230.20)
+ - Grafana [grafana.178.154.224.216.xip.io](http://grafana.178.154.224.216.xip.io)
+ - UI [ui-prod.84.201.128.191.xip.io](http://ui-prod.84.201.128.191.xip.io/)
+ - Gitlab [gitlab.178.154.230.20.xip.io](http://gitlab.178.154.230.20.xip.io)
 
 ## Checklist
 
