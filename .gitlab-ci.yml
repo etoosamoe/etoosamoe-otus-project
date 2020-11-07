@@ -1,28 +1,37 @@
 stages:
-    - build
-    - deploy
+    - build-prod
+    - deploy-prod
+    - build-dev
+    - deploy-dev
 
-build:
-    stage: build
+build-prod:
+    stage: build-prod
     variables:
       DOCKER_DRIVER: overlay2
       DOCKER_TLS_CERTDIR: ""
       DOCKER_HOST: tcp://localhost:2375/
+      CR_ENV: "prod"
     image: cr.yandex/yc/metadata-token-docker-helper:0.2
     services:
       - docker:19.03.1-dind
     script:
       - cd ./docker/app/crawler
-      - docker build . -t cr.yandex/$REGISTRY_ID/crawler:app-$CI_COMMIT_SHORT_SHA
-      - docker push cr.yandex/$REGISTRY_ID/crawler:app-$CI_COMMIT_SHORT_SHA
+      - docker build . -t cr.yandex/$REGISTRY_ID/crawler:app-master
+      - docker push cr.yandex/$REGISTRY_ID/crawler:app-master
       - cd ../ui
-      - docker build . -t cr.yandex/$REGISTRY_ID/ui:ui-$CI_COMMIT_SHORT_SHA
-      - docker push cr.yandex/$REGISTRY_ID/ui:ui-$CI_COMMIT_SHORT_SHA
+      - docker build . -t cr.yandex/$REGISTRY_ID/ui:ui-master
+      - docker push cr.yandex/$REGISTRY_ID/ui:ui-master
     when: manual
+    only:
+      - master
 
-deploy:
+deploy-prod:
   image: gcr.io/cloud-builders/kubectl:latest
-  stage: deploy
+  stage: deploy-prod
+  variables:
+    CR_ENV: "prod"
+  needs:
+    - build-prod
   script:
     - kubectl config set-cluster k8s --server="$KUBE_URL" --insecure-skip-tls-verify=true
     - kubectl config set-credentials admin --token="$KUBE_TOKEN"
@@ -31,6 +40,52 @@ deploy:
     - sed -i "s/__VERSION__/app-$CI_COMMIT_SHORT_SHA/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
     - sed -i "s/__VERSION__/ui-$CI_COMMIT_SHORT_SHA/" ./infra/k8s/gitlab-deployments/deployment-ui.yml
     - sed -i "s/__REGISTRY__/$REGISTRY_ID/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
-    - sed -i "s/__REGISTRY__/$REGISTRY_ID/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
+    - sed -i "s/__REGISTRY__/$REGISTRY_ID/" ./infra/k8s/gitlab-deployments/deployment-ui.yml
     - sh ./crawler-gitlab.sh
   when: manual
+  only:
+    - master
+
+build-dev:
+  stage: build-dev
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://localhost:2375/
+    CR_ENV: "dev"
+  image: cr.yandex/yc/metadata-token-docker-helper:0.2
+  services:
+    - docker:19.03.1-dind
+  script:
+    - cd ./docker/app/crawler
+    - docker build . -t cr.yandex/$REGISTRY_ID/crawler:app-$CI_COMMIT_SHORT_SHA
+    - docker push cr.yandex/$REGISTRY_ID/crawler:app-$CI_COMMIT_SHORT_SHA
+    - cd ../ui
+    - docker build . -t cr.yandex/$REGISTRY_ID/ui:ui-$CI_COMMIT_SHORT_SHA
+    - docker push cr.yandex/$REGISTRY_ID/ui:ui-$CI_COMMIT_SHORT_SHA
+  when: manual
+  only:
+    refs:
+      - dev
+  
+deploy-dev:
+  image: gcr.io/cloud-builders/kubectl:latest
+  stage: deploy-dev
+  variables:
+    CR_ENV: "dev"
+  needs:
+    - build-dev
+  script:
+    - kubectl config set-cluster k8s --server="$KUBE_URL" --insecure-skip-tls-verify=true
+    - kubectl config set-credentials admin --token="$KUBE_TOKEN"
+    - kubectl config set-context default --cluster=k8s --user=admin
+    - kubectl config use-context default
+    - sed -i "s/__VERSION__/app-$CI_COMMIT_SHORT_SHA/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
+    - sed -i "s/__VERSION__/ui-$CI_COMMIT_SHORT_SHA/" ./infra/k8s/gitlab-deployments/deployment-ui.yml
+    - sed -i "s/__REGISTRY__/$REGISTRY_ID/" ./infra/k8s/gitlab-deployments/deployment-bot.yml
+    - sed -i "s/__REGISTRY__/$REGISTRY_ID/" ./infra/k8s/gitlab-deployments/deployment-ui.yml
+    - sh ./crawler-gitlab.sh
+  when: manual
+  only:
+    refs:
+      - dev
